@@ -1,0 +1,622 @@
+[
+    {
+        "id": "deb0d57.1c46528",
+        "type": "tab",
+        "label": "Flow 1"
+    },
+    {
+        "id": "907f67b2.072508",
+        "type": "tab",
+        "label": "Watson Conversation Web Interface "
+    },
+    {
+        "id": "224dd19d.3fe13e",
+        "type": "tab",
+        "label": "Watson Conversation Mobile "
+    },
+    {
+        "id": "bb52e631.fbc768",
+        "type": "websocket-listener",
+        "path": "/ws/chat",
+        "wholemsg": "false"
+    },
+    {
+        "id": "4652c636.f12038",
+        "type": "telegram bot",
+        "z": "",
+        "botname": "Shivajiboss_bot",
+        "usernames": "",
+        "chatids": ""
+    },
+    {
+        "id": "28b38184.58fede",
+        "type": "telegram bot",
+        "z": "",
+        "botname": "RFIDwatson_bot",
+        "usernames": "",
+        "chatids": ""
+    },
+    {
+        "id": "3e77d543.c1882a",
+        "type": "ibmiot in",
+        "z": "deb0d57.1c46528",
+        "authentication": "boundService",
+        "apiKey": "",
+        "inputType": "evt",
+        "deviceId": "",
+        "applicationId": "",
+        "deviceType": "+",
+        "eventType": "+",
+        "commandType": "",
+        "format": "json",
+        "name": "IBM IoT App In",
+        "service": "registered",
+        "allDevices": false,
+        "allApplications": false,
+        "allDeviceTypes": true,
+        "allEvents": true,
+        "allCommands": false,
+        "allFormats": false,
+        "x": 100,
+        "y": 400,
+        "wires": [
+            [
+                "ae0082ac.51ff8",
+                "c0c482df.3f3b8"
+            ]
+        ]
+    },
+    {
+        "id": "ae0082ac.51ff8",
+        "type": "function",
+        "z": "deb0d57.1c46528",
+        "name": "temp",
+        "func": "return {payload:msg.payload.d.temp};",
+        "outputs": 1,
+        "x": 290,
+        "y": 400,
+        "wires": [
+            [
+                "ff6ad0d9.00953"
+            ]
+        ]
+    },
+    {
+        "id": "ff6ad0d9.00953",
+        "type": "switch",
+        "z": "deb0d57.1c46528",
+        "name": "temp thresh",
+        "property": "payload",
+        "rules": [
+            {
+                "t": "lte",
+                "v": 40,
+                "v2": null
+            },
+            {
+                "t": "gt",
+                "v": 40,
+                "v2": null
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 450,
+        "y": 400,
+        "wires": [
+            [
+                "80621eff.7f9de"
+            ],
+            [
+                "8e1706a.f71e8f8"
+            ]
+        ]
+    },
+    {
+        "id": "5dad02b7.a252fc",
+        "type": "debug",
+        "z": "deb0d57.1c46528",
+        "name": "cpu status",
+        "active": true,
+        "complete": "false",
+        "x": 790,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "c0c482df.3f3b8",
+        "type": "debug",
+        "z": "deb0d57.1c46528",
+        "name": "device data",
+        "active": true,
+        "console": "false",
+        "complete": "true",
+        "x": 310,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "80621eff.7f9de",
+        "type": "template",
+        "z": "deb0d57.1c46528",
+        "name": "safe",
+        "template": "Temperature ({{payload}}) within safe limits",
+        "x": 610,
+        "y": 380,
+        "wires": [
+            [
+                "5dad02b7.a252fc"
+            ]
+        ]
+    },
+    {
+        "id": "8e1706a.f71e8f8",
+        "type": "template",
+        "z": "deb0d57.1c46528",
+        "name": "danger",
+        "template": "Temperature ({{payload}}) critical",
+        "x": 620,
+        "y": 420,
+        "wires": [
+            [
+                "5dad02b7.a252fc"
+            ]
+        ]
+    },
+    {
+        "id": "cbe1a0b7.cd877",
+        "type": "ibmiot out",
+        "z": "deb0d57.1c46528",
+        "authentication": "boundService",
+        "apiKey": "",
+        "outputType": "evt",
+        "deviceId": "LivingRoomThermo1",
+        "deviceType": "thermostat",
+        "eventCommandType": "update",
+        "format": "json",
+        "data": "temp:10",
+        "name": "Send to IBM IoT Platform",
+        "service": "registered",
+        "x": 570,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "5917a925.6a3c08",
+        "type": "inject",
+        "z": "deb0d57.1c46528",
+        "name": "Send Data",
+        "topic": "",
+        "payload": "true",
+        "payloadType": "bool",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 100,
+        "y": 120,
+        "wires": [
+            [
+                "6b4a591c.014b18"
+            ]
+        ]
+    },
+    {
+        "id": "6b4a591c.014b18",
+        "type": "function",
+        "z": "deb0d57.1c46528",
+        "name": "Device payload",
+        "func": "// Thermostat's location:\nvar longitude1 = -98.49;\nvar latitude1 = 29.42;\n\n// Array of pseudo random temperatures\nvar temp1 = [15,17,18.5,20,21.5,23,24,22.2,19,18];\n\n// Array of pseudo random relative humidities\nvar humidity1 = [50,55,61,68,65,60,53,49,45,47];\n\n// Counter to select from array.\nvar counter1 = context.get('counter1')||0;\ncounter1 = counter1+1;\nif(counter1 > 9) counter1 = 0;\ncontext.set('counter1',counter1);\n\n// Create MQTT message in JSON\nmsg = {\n  payload: JSON.stringify(\n    {\n      d:{\n        \"temp\" : temp1[counter1],\n        \"humidity\" : humidity1[counter1],\n        \"location\" :\n        {\n          \"longitude\" : longitude1,\n          \"latitude\" : latitude1\n        },\n      }\n    }\n  )\n};\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 120,
+        "wires": [
+            [
+                "cbe1a0b7.cd877",
+                "805c97ee.3ed9e8"
+            ]
+        ]
+    },
+    {
+        "id": "805c97ee.3ed9e8",
+        "type": "debug",
+        "z": "deb0d57.1c46528",
+        "name": "Debug output payload",
+        "active": false,
+        "console": "false",
+        "complete": "payload",
+        "x": 560,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "86df0b6c.af90c8",
+        "type": "comment",
+        "z": "deb0d57.1c46528",
+        "name": "Device Simulator",
+        "info": "Sends simulated device sensor data to IBM Watson IoT Plaform.\n\nCan be configured to send on click or on an automatic interval.\n\n\n#Prerequisite\nOutput node device type and device ID need to match a device that it registered in a running IBM Watson IoT Platform service.\n\n# Watson IoT Platform docs\n[Connecting devices](https://www.bluemix.net/docs/services/IoT/iotplatform_task.html)",
+        "x": 100,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "141b7c7.ad42a84",
+        "type": "comment",
+        "z": "deb0d57.1c46528",
+        "name": "1. Configure target",
+        "info": "",
+        "x": 550,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "c2dd8ed5.7dd7f",
+        "type": "comment",
+        "z": "deb0d57.1c46528",
+        "name": "2. Click to send data",
+        "info": "To automatically send data:\n1. Change *Repeat* to interval.\n2. Click Deploy button.\n",
+        "x": 110,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "7926c7b2.86d938",
+        "type": "comment",
+        "z": "deb0d57.1c46528",
+        "name": "Temperature Monitor",
+        "info": "",
+        "x": 110,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "188a5e87.e775a1",
+        "type": "comment",
+        "z": "deb0d57.1c46528",
+        "name": "Configure source",
+        "info": "",
+        "x": 100,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "23c895ed.a1463a",
+        "type": "websocket in",
+        "z": "907f67b2.072508",
+        "name": "",
+        "server": "bb52e631.fbc768",
+        "client": "",
+        "x": 87.49999618530273,
+        "y": 166.23230457305908,
+        "wires": [
+            [
+                "d119372a.5fc7c8"
+            ]
+        ]
+    },
+    {
+        "id": "d119372a.5fc7c8",
+        "type": "function",
+        "z": "907f67b2.072508",
+        "name": "Input_msg",
+        "func": "delete msg._session;\nreturn msg;\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 248.8333511352539,
+        "y": 240.7575662136078,
+        "wires": [
+            [
+                "a538ec9c.57a26",
+                "e20ae75a.750c78"
+            ]
+        ]
+    },
+    {
+        "id": "e20ae75a.750c78",
+        "type": "websocket out",
+        "z": "907f67b2.072508",
+        "name": "",
+        "server": "bb52e631.fbc768",
+        "client": "",
+        "x": 765.8333168029785,
+        "y": 238.9999942779541,
+        "wires": []
+    },
+    {
+        "id": "a490fe57.ce495",
+        "type": "http in",
+        "z": "907f67b2.072508",
+        "name": "",
+        "url": "/chat",
+        "method": "get",
+        "swaggerDoc": "",
+        "x": 119.05554962158203,
+        "y": 431.8889226913452,
+        "wires": [
+            [
+                "68ca17ab.df44e8"
+            ]
+        ]
+    },
+    {
+        "id": "68ca17ab.df44e8",
+        "type": "template",
+        "z": "907f67b2.072508",
+        "name": "Web Template",
+        "field": "",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "<head>\n  <meta name=\"viewport\" content=\"width=320, initial-scale=1\">\n  <title>Chat</title>\n</head>\n\n<body>\n  <div id=\"wrapper\">\n    <div id=\"chat_box\" class=\"content\"></div>\n\n    <div id=\"footer\">\n      <div class=\"content\">\n        <input type=\"text\" id=\"user\" placeholder=\"Who are you?\" />\n        <input type=\"text\" id=\"message\" placeholder=\"What do you want to say?\" />\n        <input type=\"button\" id=\"send_btn\" value=\"Send\" onclick=\"sendMessage()\">\n      </div>\n    </div>\n  </div>\n</body>\n\n<script type=\"text/javascript\">\n  var wsUri = \"wss://{{req.headers.host}}/ws/chat\";\n  var ws = new WebSocket(wsUri);\n\n  function createSystemMessage(message) {\n    var message = document.createTextNode(message);\n\n    var messageBox = document.createElement('p');\n    messageBox.className = 'system';\n\n    messageBox.appendChild(message);\n\n    var chat = document.getElementById('chat_box');\n    chat.appendChild(messageBox);\n  }\n\n  function createUserMessage(user, message) {\n    var user = document.createTextNode(user + ': ');\n\n    var userBox = document.createElement('span');\n    userBox.className = 'username';\n    userBox.appendChild(user);\n\n    var message = document.createTextNode(message);\n\n    var messageBox = document.createElement('p');\n    messageBox.appendChild(userBox);\n    messageBox.appendChild(message);\n\n    var chat = document.getElementById('chat_box');\n    chat.appendChild(messageBox);\n  }\n\n  ws.onopen = function(ev) {\n    createSystemMessage('[Connected]');\n  };\n\n  ws.onclose = function(ev) {\n    createSystemMessage('[Disconnected]');\n  }\n\n  ws.onmessage = function(ev) {\n    var payload = JSON.parse(ev.data);\n    createUserMessage(payload.user, payload.message);\n\n    var chat = document.getElementById('chat_box');\n    chat.scrollTop = chat.scrollHeight;\n  }\n\n  function sendMessage() {\n    var user = document.getElementById('user');\n    var message = document.getElementById('message');\n\n    var payload = {\n      message: message.value,\n      user: user.value,\n      ts: (new Date()).getTime()\n    };\n\n    ws.send(JSON.stringify(payload));\n    message.value = \"\";\n  };\n</script>\n\n<style type=\"text/css\">\n  * {\n    font-family: \"Palatino Linotype\", \"Book Antiqua\", Palatino, serif;\n    font-style: italic;\n    font-size: 24px;\n  }\n\n  html, body, #wrapper {\n    margin: 0;\n    padding: 0;\n    height: 100%;\n  }\n\n  #wrapper {\n    background-color: #ecf0f1;\n  }\n\n  #chat_box {\n    box-sizing: border-box;\n    height: 100%;\n    overflow: auto;\n    padding-bottom: 50px;\n  }\n\n  #footer {\n    box-sizing: border-box;\n    position: fixed;\n    bottom: 0;\n    height: 50px;\n    width: 100%;\n    background-color: #2980b9;\n  }\n\n  #footer .content {\n    padding-top: 4px;\n    position: relative;\n  }\n\n  #user { width: 20%; }\n  #message { width: 68%; }\n  #send_btn {\n    width: 10%;\n    position: absolute;\n    right: 0;\n    bottom: 0;\n    margin: 0;\n  }\n\n  .content {\n    width: 70%;\n    margin: 0 auto;\n  }\n\n  input[type=\"text\"],\n  input[type=\"button\"] {\n    border: 0;\n    color: #fff;\n  }\n\n  input[type=\"text\"] {\n    background-color: #146EA8;\n    padding: 3px 10px;\n  }\n\n  input[type=\"button\"] {\n    background-color: #f39c12;\n    border-right: 2px solid #e67e22;\n    border-bottom: 2px solid #e67e22;\n    min-width: 70px;\n    display: inline-block;\n  }\n\n  input[type=\"button\"]:hover {\n    background-color: #e67e22;\n    border-right: 2px solid #f39c12;\n    border-bottom: 2px solid #f39c12;\n    cursor: pointer;\n  }\n\n  .system,\n  .username {\n    color: #aaa;\n    font-style: italic;\n    font-family: monospace;\n    font-size: 16px;\n  }\n\n  @media(max-width: 1000px) {\n    .content { width: 90%; }\n  }\n\n  @media(max-width: 780px) {\n    #footer { height: 91px; }\n    #chat_box { padding-bottom: 91px; }\n\n    #user { width: 100%; }\n    #message { width: 80%; }\n  }\n\n  @media(max-width: 400px) {\n    #footer { height: 135px; }\n    #chat_box { padding-bottom: 135px; }\n\n    #message { width: 100%; }\n    #send_btn {\n      position: relative;\n      margin-top: 3px;\n      width: 100%;\n    }\n  }\n</style>\n",
+        "x": 342.05554962158203,
+        "y": 431.8889226913452,
+        "wires": [
+            [
+                "b383b853.450f38"
+            ]
+        ]
+    },
+    {
+        "id": "b383b853.450f38",
+        "type": "http response",
+        "z": "907f67b2.072508",
+        "name": "",
+        "x": 531.3412742614746,
+        "y": 432.31748390197754,
+        "wires": []
+    },
+    {
+        "id": "721664c7.8a34ec",
+        "type": "watson-conversation-v1",
+        "z": "907f67b2.072508",
+        "name": "Chemical_Conv",
+        "workspaceid": "6d075aa3-88f8-412b-a50a-1f14100a69fb",
+        "multiuser": false,
+        "context": false,
+        "x": 596.732349395752,
+        "y": 163.35351371765137,
+        "wires": [
+            [
+                "49044d00.a64df4"
+            ]
+        ]
+    },
+    {
+        "id": "a538ec9c.57a26",
+        "type": "function",
+        "z": "907f67b2.072508",
+        "name": "Conv_Input",
+        "func": "var message = JSON.parse(msg.payload);\nmsg.payload = message.message;\nmsg.params = {\"context\" :{\n    \"location\" : \"#location#\"\n}};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 402.33838653564453,
+        "y": 164.02020645141602,
+        "wires": [
+            [
+                "721664c7.8a34ec"
+            ]
+        ]
+    },
+    {
+        "id": "d1e63b5e.3d36a8",
+        "type": "function",
+        "z": "907f67b2.072508",
+        "name": "Output_Msg",
+        "func": "//var msgs = msg.payload.output.text[0];\n\nvar replace_convtext = msg.outputtext;\nreplace_convtext = replace_convtext.replace(\"#location#\",msg.payload);\n\nmsg.payload = \n{\n    \"message\" : replace_convtext,\n    \"user\" : \"Watson\"\n};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 870.750129699707,
+        "y": 353.9722023010254,
+        "wires": [
+            [
+                "e20ae75a.750c78"
+            ]
+        ]
+    },
+    {
+        "id": "f6b61bb3.2c5138",
+        "type": "http request",
+        "z": "907f67b2.072508",
+        "name": "DBRequest",
+        "method": "GET",
+        "ret": "obj",
+        "url": "https://91b8fbd9-e6b2-45d5-a2f7-f023edd47cab-bluemix.cloudant.com/rfid/_design/chemicalsearch/_view/chemicalSearch?limit=20&reduce=false&&descending=true",
+        "tls": "",
+        "x": 972.0529899597168,
+        "y": 161.40403842926025,
+        "wires": [
+            [
+                "125459d5.2cad66"
+            ]
+        ]
+    },
+    {
+        "id": "49044d00.a64df4",
+        "type": "function",
+        "z": "907f67b2.072508",
+        "name": "Conv_Res",
+        "func": "var entity_chemical_name = \"\";\nif(msg.payload.entities.length !== 0){\n    for(var i=0;i<msg.payload.entities.length;i++){\n        entity_chemical_name = msg.payload.entities[i].value;\n        }        \n    } else {\n        entity_chemical_name = null;\n    }\nmsg.chemicalname = entity_chemical_name;\nmsg.outputtext = msg.payload.output.text[0];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 788.0555305480957,
+        "y": 162.1110644340515,
+        "wires": [
+            [
+                "f6b61bb3.2c5138"
+            ]
+        ]
+    },
+    {
+        "id": "125459d5.2cad66",
+        "type": "function",
+        "z": "907f67b2.072508",
+        "name": "chemical_location",
+        "func": "var chemical_loc = \"\";\nif(msg.chemicalname !== null){   \n    for(var i=0; i< msg.payload.rows.length; i++){        \n        if(msg.payload.rows[i].key.toLowerCase() === msg.chemicalname.toLowerCase()){\n            chemical_loc =  msg.payload.rows[i].value[1];\n            break;\n            }\n        }\n   }\nmsg.payload = chemical_loc;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 971.9442863464355,
+        "y": 235.9166431427002,
+        "wires": [
+            [
+                "d1e63b5e.3d36a8"
+            ]
+        ]
+    },
+    {
+        "id": "c42cdda.fee152",
+        "type": "comment",
+        "z": "907f67b2.072508",
+        "name": "Watson Conversation chat module",
+        "info": "",
+        "x": 169.375,
+        "y": 93.75000071525574,
+        "wires": []
+    },
+    {
+        "id": "533dbfda.6aa1b",
+        "type": "comment",
+        "z": "907f67b2.072508",
+        "name": "Parsing Web Template ",
+        "info": "",
+        "x": 158.12500381469727,
+        "y": 347.5000057220459,
+        "wires": []
+    },
+    {
+        "id": "47eeba4f.9c2964",
+        "type": "telegram receiver",
+        "z": "224dd19d.3fe13e",
+        "name": "",
+        "bot": "28b38184.58fede",
+        "x": 109.28567123413086,
+        "y": 225.35714626312256,
+        "wires": [
+            [
+                "fd744552.c554f8",
+                "c41bee61.23afd"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "c7dfd1a9.97b95",
+        "type": "telegram sender",
+        "z": "224dd19d.3fe13e",
+        "name": "",
+        "bot": "28b38184.58fede",
+        "x": 1056.9642791748047,
+        "y": 316.2499809265137,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "fd744552.c554f8",
+        "type": "function",
+        "z": "224dd19d.3fe13e",
+        "name": "Input_Msg",
+        "func": "msg.chatId = msg.payload.chatId;\nmsg.payload = msg.payload.content;\nmsg.params = {\"context\" :{\n    \"location\" : \"#location#\"\n}};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 309.2856750488281,
+        "y": 154.1071481704712,
+        "wires": [
+            [
+                "525a3d9d.5998b4"
+            ]
+        ]
+    },
+    {
+        "id": "c41bee61.23afd",
+        "type": "debug",
+        "z": "224dd19d.3fe13e",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 325.7141456604004,
+        "y": 291.0714120864868,
+        "wires": []
+    },
+    {
+        "id": "525a3d9d.5998b4",
+        "type": "watson-conversation-v1",
+        "z": "224dd19d.3fe13e",
+        "name": "",
+        "workspaceid": "6d075aa3-88f8-412b-a50a-1f14100a69fb",
+        "multiuser": false,
+        "context": false,
+        "x": 481.24995040893555,
+        "y": 154.28571796417236,
+        "wires": [
+            [
+                "4d385a1e.2e9fc4"
+            ]
+        ]
+    },
+    {
+        "id": "4d385a1e.2e9fc4",
+        "type": "function",
+        "z": "224dd19d.3fe13e",
+        "name": "Conv_Res",
+        "func": "var entity_chemical_name = \"\";\nif(msg.payload.entities.length !== 0){\n    for(var i=0;i<msg.payload.entities.length;i++){\n        entity_chemical_name = msg.payload.entities[i].value;\n        }        \n    } else {\n        entity_chemical_name = null;\n    }\nmsg.chemicalname = entity_chemical_name;\nmsg.outputtext = msg.payload.output.text[0];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 658.5712776184082,
+        "y": 152.85714435577393,
+        "wires": [
+            [
+                "715d00e0.53959"
+            ]
+        ]
+    },
+    {
+        "id": "715d00e0.53959",
+        "type": "http request",
+        "z": "224dd19d.3fe13e",
+        "name": "DBRequest",
+        "method": "GET",
+        "ret": "obj",
+        "url": "https://91b8fbd9-e6b2-45d5-a2f7-f023edd47cab-bluemix.cloudant.com/rfid/_design/chemicalsearch/_view/chemicalSearch?limit=20&reduce=false&&descending=true",
+        "tls": "",
+        "x": 842.857105255127,
+        "y": 152.4285707473755,
+        "wires": [
+            [
+                "5a8d65.597c829c"
+            ]
+        ]
+    },
+    {
+        "id": "5a8d65.597c829c",
+        "type": "function",
+        "z": "224dd19d.3fe13e",
+        "name": "chemical_location",
+        "func": "var chemical_loc = \"\";\nif(msg.chemicalname !== null){   \n    for(var i=0; i< msg.payload.rows.length; i++){        \n        if(msg.payload.rows[i].key.toLowerCase() === msg.chemicalname.toLowerCase()){\n            chemical_loc =  msg.payload.rows[i].value[1];\n            break;\n            }\n        }\n   }\nmsg.payload = chemical_loc;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1048.4627571105957,
+        "y": 153.0840549468994,
+        "wires": [
+            [
+                "e6f1af52.289ef"
+            ]
+        ]
+    },
+    {
+        "id": "e6f1af52.289ef",
+        "type": "function",
+        "z": "224dd19d.3fe13e",
+        "name": "Output_Msg",
+        "func": "//var msgs = msg.payload.output.text[0];\n\nvar replace_convtext = msg.outputtext;\nreplace_convtext = replace_convtext.replace(\"#location#\",msg.payload);\n\nmsg.payload = {\n    chatId : msg.chatId,\n    type : \"message\",\n    content : replace_convtext\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1048.6971855163574,
+        "y": 228.28244876861572,
+        "wires": [
+            [
+                "c7dfd1a9.97b95"
+            ]
+        ]
+    }
+]
